@@ -5,8 +5,8 @@ export class Authenticator {
     private expireIn: string = process.env.TOKEN_EXPIRES_IN as string
     private jwt_key: string = process.env.JWT_KEY as string
 
-    public generateToken(input: AuthenticationData, expireIn: string){
-        const token = jwt.sign({
+    public generateToken(input: AuthenticationData){
+        const token: string = jwt.sign({
                 id: input.id,
                 role: input.role
             },
@@ -34,5 +34,7 @@ export class Authenticator {
 
 interface AuthenticationData {
     id: string,
-    role?: USER_ROLES
+    role?: string
 }
+
+export const authenticator: Authenticator = new Authenticator()

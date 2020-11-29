@@ -14,3 +14,5 @@ export class HashManager {
     }
 
 }
+
+export const hashManager = new HashManager()
