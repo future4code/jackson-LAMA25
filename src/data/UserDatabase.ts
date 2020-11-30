@@ -13,11 +13,9 @@ class UserDatabase extends BaseDatabase {
     ) {
         try {
 
-            await super.getConnection()
+            await BaseDatabase.getConnection()
             .insert({id, name, email, password, role})
             .into(UserDatabase.tableName)
-
-            return "Sucess"
 
         } catch (error) {
             throw new Error(error.sqlMessage || error.message);
@@ -27,7 +25,7 @@ class UserDatabase extends BaseDatabase {
     public getByEmail = async (email: string): Promise<any | string> => {
         try {
             
-            const result = await this.getConnection()
+            const result = await BaseDatabase.getConnection()
             .select("*")
             .from("lama_users")
             .where("email", email)

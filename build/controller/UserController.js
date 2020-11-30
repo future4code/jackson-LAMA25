@@ -25,7 +25,10 @@ class UserController {
                 res.status(200).send(token);
             }
             catch (error) {
-                res.status(error.code).send(error.message || error.sqlMessage);
+                res.status(error.statusCode)
+                    .send({
+                    message: error.message || error.sqlMessage
+                });
             }
         });
         this.login = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -35,10 +38,13 @@ class UserController {
                     password: req.body.password
                 };
                 const token = yield UserBusiness_1.userBusiness.login(input.email, input.password);
+                if (token === "Invalid password.") {
+                    throw new Error("Invalid password.");
+                }
                 res.status(200).send(token);
             }
             catch (error) {
-                res.status(error.code).send(error.message || error.sqlMessage);
+                res.status(400).send(error.message || error.sqlMessage);
             }
         });
     }

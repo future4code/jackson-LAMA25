@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userBusiness = void 0;
 const UserDatabase_1 = require("../data/UserDatabase");
+const CustomError_1 = require("../errors/CustomError");
 const User_1 = require("../model/User");
 const Authenticator_1 = require("../services/Authenticator");
 const HashManager_1 = require("../services/HashManager");
@@ -23,7 +24,7 @@ class UserBusiness {
                     !email ||
                     !password ||
                     !role) {
-                    throw new Error("Preencha todos os campos.");
+                    throw new CustomError_1.CustomError(400, "Preencha todos os campos.");
                 }
                 ;
                 if (!email.includes("@")) {
@@ -52,7 +53,11 @@ class UserBusiness {
                 });
             }
             catch (error) {
-                return (error.message || error.sqlMessage);
+                console.log(error.sqlMessage);
+                if (error.sqlMessage.includes("Duplicate")) {
+                    throw new CustomError_1.CustomError(409, "Usuário já existe.");
+                }
+                throw new CustomError_1.CustomError(400, error.message || error.sqlMessage);
             }
         });
         this.login = (email, password) => __awaiter(this, void 0, void 0, function* () {
@@ -61,20 +66,17 @@ class UserBusiness {
                     throw new Error("Preencha todos os campos.");
                 }
                 const user = yield UserDatabase_1.userDatabase.getByEmail(email);
-                console.log(user);
-                if (user === "Cannot read property 'id' of undefined") {
-                    throw new Error("Email inválido");
-                }
                 const passwordIsCorrect = yield HashManager_1.hashManager.compare(password, user.getHashPassword());
                 if (!passwordIsCorrect) {
-                    throw new Error("Senha inválida.");
+                    throw new Error("Invalid password.");
                 }
                 ;
                 const token = Authenticator_1.authenticator.generateToken({ id: user.getId(), role: user.getRole() });
-                return { token: token };
+                return token;
             }
             catch (error) {
-                return (error.message || error.sqlMessage);
+                let errorMessage = error.message || error.sqlMessage;
+                return errorMessage;
             }
         });
     }

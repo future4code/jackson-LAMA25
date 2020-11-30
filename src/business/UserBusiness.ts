@@ -1,5 +1,5 @@
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import { userDatabase } from "../data/UserDatabase";
+import { CustomError } from "../errors/CustomError";
 import { User, UserBusinessSignUpOutputDTO, UserModel } from "../model/User";
 import { authenticator } from "../services/Authenticator";
 import { hashManager } from "../services/HashManager";
@@ -22,7 +22,7 @@ class UserBusiness {
                 !password ||
                 !role
             ) {
-                throw new Error("Preencha todos os campos.")
+                throw new CustomError(400, "Preencha todos os campos.")
             };
 
             if(!email.includes("@")) {
@@ -39,17 +39,13 @@ class UserBusiness {
 
             const user: User = new User(id, name, email, hashPassword, role); // o erro do user roles deve cair aqui!
 
-            const result = await userDatabase.signup(
+            await userDatabase.signup(
                 user.getId(), 
                 user.getName(),
                 user.getEmail(),
                 hashPassword,
                 user.getRole()
             );
-
-            if(result !== "Sucess") {
-                throw new Error("Erro no DB")
-            };
 
             const token: string = authenticator.generateToken({
                 id: user.getId(), 
@@ -62,7 +58,13 @@ class UserBusiness {
             });
 
         } catch (error) {
-            return (error.message || error.sqlMessage)
+            console.log(error.message)
+
+            if(error.message.includes("Duplicate entry")){
+                throw new CustomError(409, "Usuário já existe.")
+            }
+
+            throw new CustomError(400, error.message || error.sqlMessage)
         }
     }
 

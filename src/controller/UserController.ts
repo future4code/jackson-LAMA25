@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { toEditorSettings } from "typescript";
 import { userBusiness } from "../business/UserBusiness";
 import { UserBusinessSignUpOutputDTO, UserInputControllerDTO, UserInputLoginDTO } from "../model/User";
 
@@ -23,8 +22,11 @@ export class UserController {
 
             res.status(200).send(token);
 
-        } catch (error) {
-            res.status(error.code).send(error.message || error.sqlMessage);
+        } catch (error) {           
+            res.status(error.statusCode)
+            .send({
+                message: error.message || error.sqlMessage
+            })
         }
     }
 

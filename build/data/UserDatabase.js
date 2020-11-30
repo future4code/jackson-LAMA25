@@ -24,7 +24,11 @@ class UserDatabase extends BaseDatabase_1.BaseDatabase {
                 return User_1.User.toUserModel(result[0]);
             }
             catch (error) {
-                throw new Error(error.message || error.sqlMessage);
+                let errorMessage = error.sqlMessage || error.message;
+                if (errorMessage.includes("undefined")) {
+                    errorMessage = "Invalid email.";
+                }
+                throw new Error(errorMessage);
             }
         });
     }
