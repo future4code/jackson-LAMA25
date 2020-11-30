@@ -1,4 +1,5 @@
 export class User {
+    
     private id: string
     private name: string
     private email: string
@@ -28,23 +29,30 @@ export class User {
     }
 
     // apenas para pegar os nomes. Não é possível alterar
-    public getId = () => this.id
-    public getName = () => this.name
-    public getEmail = () => this.email
-    public getHashPassword = () => this.password
-    public getRole = () => this.role
-
-    public toUserModel = (result: any): UserModel => {
-        const user: UserModel = {
-            id: result.id,
-            name: result.name,
-            email: result.email,
-            password: result.password,
-            role: result.role
-        }
-
-        return user
+    getId(){ 
+        return this.id
     }
+
+    getName() {
+        return this.name
+    }
+
+    getEmail() {
+        return this.email
+    }
+
+    getHashPassword() {
+        return this.password
+    }
+
+    getRole() {
+        return this.role
+    }
+
+    public static toUserModel(object: any): User{
+        return new User(object.id, object.name, object.email, object.password, object.role);
+    }
+
 }
 
 export enum USER_ROLES {

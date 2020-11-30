@@ -1,3 +1,4 @@
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import { userDatabase } from "../data/UserDatabase";
 import { User, UserBusinessSignUpOutputDTO, UserModel } from "../model/User";
 import { authenticator } from "../services/Authenticator";
@@ -73,20 +74,12 @@ class UserBusiness {
                 throw new Error("Preencha todos os campos.");
             }
     
-            if(!email.includes("@")){
-                throw new Error("E-mail inválido.");
-            }
-    
             const user: User = await userDatabase.getByEmail(email);
-    
-            if(!user){
-                throw new Error("Usuário não encontrado. E-mail inválido.");
-            };
-    
-            const passwordIsCorrect = hashManager.compare(password, user.getHashPassword());
-    
+
+            const passwordIsCorrect = await hashManager.compare(password, user.getHashPassword());
+
             if(!passwordIsCorrect){
-                throw new Error("Senha inválida.");
+                throw new Error("Invalid password.");
             };
 
             const token: string = authenticator.generateToken({id: user.getId(), role: user.getRole()});
@@ -94,7 +87,8 @@ class UserBusiness {
             return token;
             
         } catch (error) {
-            return (error.message || error.sqlMessage);            
+            let errorMessage = error.message || error.sqlMessage            
+            return errorMessage;            
         }            
         
     }

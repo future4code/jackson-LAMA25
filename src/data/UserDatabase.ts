@@ -2,20 +2,20 @@ import { User } from "../model/User";
 import { BaseDatabase } from "./BaseDatabase";
 
 class UserDatabase extends BaseDatabase {
-    private tableName: string = "lama_users"
+    private static tableName: string = "lama_users"
 
-    public signup = async (
+    public async signup(
         id: string,
         name: string,
         email: string,
         password: string,
         role: string
-    ) => {
+    ) {
         try {
 
             await super.getConnection()
             .insert({id, name, email, password, role})
-            .into(this.tableName)
+            .into(UserDatabase.tableName)
 
             return "Sucess"
 
@@ -24,17 +24,24 @@ class UserDatabase extends BaseDatabase {
         }
     }
 
-    public getByEmail = async (email: string): Promise<any> => {
+    public getByEmail = async (email: string): Promise<any | string> => {
         try {
             
-            const result = await super.getConnection()
+            const result = await this.getConnection()
             .select("*")
-            .from(this.tableName)
+            .from("lama_users")
+            .where("email", email)
 
-            return result[0]
+            return User.toUserModel(result[0])
 
         } catch (error) {
-            return (error.message || error.sqlMessage)
+            let errorMessage = error.sqlMessage || error.message 
+            
+            if(errorMessage.includes("undefined")){
+                errorMessage = "Invalid email."
+            }
+
+            throw new Error(errorMessage)
         }
         
     }
