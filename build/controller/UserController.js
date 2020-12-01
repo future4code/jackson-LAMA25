@@ -22,7 +22,7 @@ class UserController {
                     role: req.body.role
                 };
                 const token = yield UserBusiness_1.userBusiness.signup(input.name, input.email, input.password, input.role);
-                res.status(200).send(token);
+                res.status(200).send({ token: token });
             }
             catch (error) {
                 res.status(error.statusCode)
@@ -41,7 +41,7 @@ class UserController {
                 if (token === "Invalid password.") {
                     throw new Error("Invalid password.");
                 }
-                res.status(200).send(token);
+                res.status(200).send({ token: token });
             }
             catch (error) {
                 res.status(400).send(error.message || error.sqlMessage);

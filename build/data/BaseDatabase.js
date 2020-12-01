@@ -17,7 +17,7 @@ const knex_1 = __importDefault(require("knex"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 class BaseDatabase {
-    getConnection() {
+    static getConnection() {
         if (!BaseDatabase.connection) {
             BaseDatabase.connection = knex_1.default({
                 client: "mysql",

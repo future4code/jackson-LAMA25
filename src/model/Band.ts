@@ -16,3 +16,9 @@ export class Band {
         this.responsible = responsible
     }
 } 
+
+export interface InputBandDTO {
+    name: string,
+    music_genre: string,
+    responsible: string
+}

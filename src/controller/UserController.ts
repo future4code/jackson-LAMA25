@@ -20,7 +20,7 @@ export class UserController {
                 input.role
             )
 
-            res.status(200).send(token);
+            res.status(200).send({token: token});
 
         } catch (error) {           
             res.status(error.statusCode)
@@ -43,7 +43,7 @@ export class UserController {
                 throw new Error("Invalid password.")
             }
            
-            res.status(200).send(token)
+            res.status(200).send({token: token})
         } catch (error) {
             res.status(400).send(error.message || error.sqlMessage)
         }

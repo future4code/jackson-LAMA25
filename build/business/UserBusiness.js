@@ -38,11 +38,7 @@ class UserBusiness {
                 const id = IdGenerator_1.idGenerator.generate();
                 const hashPassword = yield HashManager_1.hashManager.hash(password);
                 const user = new User_1.User(id, name, email, hashPassword, role);
-                const result = yield UserDatabase_1.userDatabase.signup(user.getId(), user.getName(), user.getEmail(), hashPassword, user.getRole());
-                if (result !== "Sucess") {
-                    throw new Error("Erro no DB");
-                }
-                ;
+                yield UserDatabase_1.userDatabase.signup(user.getId(), user.getName(), user.getEmail(), hashPassword, user.getRole());
                 const token = Authenticator_1.authenticator.generateToken({
                     id: user.getId(),
                     role: user.getRole()
@@ -53,8 +49,8 @@ class UserBusiness {
                 });
             }
             catch (error) {
-                console.log(error.sqlMessage);
-                if (error.sqlMessage.includes("Duplicate")) {
+                console.log(error.message);
+                if (error.message.includes("Duplicate entry")) {
                     throw new CustomError_1.CustomError(409, "Usuário já existe.");
                 }
                 throw new CustomError_1.CustomError(400, error.message || error.sqlMessage);

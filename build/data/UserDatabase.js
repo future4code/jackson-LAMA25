@@ -17,7 +17,7 @@ class UserDatabase extends BaseDatabase_1.BaseDatabase {
         super(...arguments);
         this.getByEmail = (email) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield this.getConnection()
+                const result = yield BaseDatabase_1.BaseDatabase.getConnection()
                     .select("*")
                     .from("lama_users")
                     .where("email", email);
@@ -33,15 +33,11 @@ class UserDatabase extends BaseDatabase_1.BaseDatabase {
         });
     }
     signup(id, name, email, password, role) {
-        const _super = Object.create(null, {
-            getConnection: { get: () => super.getConnection }
-        });
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield _super.getConnection.call(this)
+                yield BaseDatabase_1.BaseDatabase.getConnection()
                     .insert({ id, name, email, password, role })
                     .into(UserDatabase.tableName);
-                return "Sucess";
             }
             catch (error) {
                 throw new Error(error.sqlMessage || error.message);
